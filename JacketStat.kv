@@ -1,0 +1,171 @@
+#:kivy 2.0.0
+
+WindowManager:
+    Startup:
+    HomeWindow:
+<Startup>:
+    name: "startup"
+    GridLayout:
+        cols:1
+        Image:
+            source: 'JacketStatLogo.png'
+    Label:
+        text: "JACKETSTAT"
+        font_size: 50
+        color: (1, 0.5, 0, 1)
+        size_hint_x: 1
+        size_hint_y: 1.8
+    Button:
+        text: "Get Started>>>"
+        font_size: 25
+        background_color: (5, 1, 0, 1)
+        color: (0, 0, 0, 1)
+        pos_hint:{"x":0, "y":0.06}
+        size_hint: (1,None)
+        on_release: app.root.current = "home"
+        on_release: root.manager.transition.direction = "left"
+<HomeWindow>:
+    name: "home"
+    lilypad:lilypad
+    coolinglabel:coolinglabel
+    heatinglabel:heatinglabel
+    cooling_slider:cooling_slider
+    heating_slider:heating_slider
+    coolingbutton:coolingbutton
+    heatingbutton:heatingbutton
+    powerswitch:powerswitch
+    fc: fc
+
+    canvas.before:
+        Rectangle:
+            pos: self.pos
+            size: self.size
+            source:'AppBackground.png'
+    GridLayout:
+        cols:1
+        size: root.width * 0.1, root.height * 0.1
+        Label:
+            text: "JacketStat"
+            font_size:30
+            bold: "true"
+            size_hint_x: 0.3
+            size_hint_y: 0.5
+        GridLayout:
+            cols:2
+            ToggleButton:
+                id:heatingbutton
+                background_color: (1, 0.5, 0, 1)
+                font_size: 25
+                text: "Heating"
+                state: "normal"
+                group: "buttons"
+                disabled: True if powerswitch.state == 'normal' else False
+                on_release: root.heatingbutton_supremacy()
+            ToggleButton:
+                id:coolingbutton
+                background_color:(0, 0, 0.7, 1)
+                font_size: 25
+                text: "Cooling"
+                state: "normal"
+                group:"buttons"
+                disabled: True if powerswitch.state == 'normal' else False
+                on_release: root.coolingbutton_supremacy()
+        GridLayout:
+            cols: 1
+            Label:
+                id: powerlabel
+                text: "Power"
+                font_size: 25
+        AnchorLayout:
+            cols: 1
+            ToggleButton:
+                id: powerswitch
+                state: "normal"
+                background_normal: 'power.png'
+                background_down: 'power.png'
+                size_hint: (None, None)
+                size: (60, 60)
+                on_state: root.power()
+                on_state: root.get_temp()
+                on_state: root.get_values()
+        GridLayout:
+            cols:2
+            Label:
+                id: temperaturelabel
+                text:"Heating"
+                color: (0, 0, 0, 1)
+                font_size: 25
+            Label:
+                id: temperaturelabel
+                text:"Cooling"
+                color: (0, 0, 0, 1)
+                font_size: 25
+            Label:
+                id: heatinglabel
+                text:"No Power"
+                color: (0, 0, 0, 1)
+            Label:
+                id: coolinglabel
+                text:"No Power"
+                color: (0, 0, 0, 1)
+            Slider:
+                value: 75
+                value_track: "True"
+                value_track_color: (1, 0, 0, 1)
+                id: heating_slider
+                min: 65 if fc.state == 'normal' else 18
+                max: 85 if fc.state == 'normal' else 30
+                step: 1
+                orientation: "horizontal"
+                disabled: True if powerswitch.state == 'normal' else False
+                on_value: root.heating_label_size(*args)
+                on_value: root.heating_restriction()
+                on_value: root.button_helper()
+            Slider:
+                value: 75
+                value_track: "True"
+                value_track_color: (0, 0, 1, 1)
+                id: cooling_slider
+                min: 65 if fc.state == 'normal' else 18
+                max: 85 if fc.state == 'normal' else 30
+                step: 1
+                orientation: "horizontal"
+                disabled: True if powerswitch.state == 'normal' else False
+                on_value: root.cooling_label_size(*args)
+                on_value: root.cooling_restriction()
+                on_value: root.button_helper()
+        GridLayout:
+            cols:1
+            Label:
+                text: "Jacket Temperature"
+                underline: "true"
+                font_size: 25
+        GridLayout:
+            rows: 2
+            cols: 1
+            Label:
+                font_size: 20
+                id: lilypad
+                bold: "true"
+                text: "--°F/°C" if root.powerswitch.state == 'normal' else root.lilypad.text
+        AnchorLayout:
+            cols:1
+            ToggleButton:
+                id: fc
+                state: "normal"
+                background_normal: 'F.png'
+                background_down: 'C.png'
+                size_hint: (None, None)
+                size: (80, 49)
+                pos_hint: (None, None)
+                disabled: True if powerswitch.state == 'normal' else False
+                background_disabled_normal: 'F.png'
+                background_disabled_down: 'C.png'
+                on_state: root.ftoc()
+
+        GridLayout:
+            cols: 1
+            Label:
+                text:'Created by: Kathie Hernandez, Prija Rana,\n                 & Christopher Guillermo'
+                size_hint: 0.2,0.5
+                font_size: 10
